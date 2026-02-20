@@ -1,0 +1,10 @@
+{
+    "php.suggest.basic": true,
+    "php.validate.enable": true,
+    "php.validate.executablePath": "/usr/local/bin/php",
+    "phpmd.enabled": true,
+    "phpSniffer.autoDetect": true,
+    "phpmd.rules": "phpmd.xml",
+    "php.version": "8.3",
+    "postman.settings.dotenv-detection-notification-visibility": false
+}
