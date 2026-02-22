@@ -2,27 +2,30 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class PaymentRequest extends Model
+class Transaction extends Model
 {
     protected $fillable = [
-        'transaction_id',
+        'amount',
+        'currency',
+        'status',
         'payment_gateway',
-        'request_data',
-        'response_data',
-        'status_code',
-        'response_message',
+        'gateway_transaction_id',
     ];
 
     protected $casts = [
-        'request_data' => 'json',
-        'response_data' => 'json',
+        'amount' => 'decimal:2',
     ];
 
-    public function transaction(): BelongsTo
+    public function paymentRquests(): HasMany
     {
-        return $this->belongsTo(Transaction::class);
+        return $this->hasMany(PaymentRequest::class);
+    }
+
+    public function webhookLogs(): HasMany
+    {
+        return $this->hasMany(WebhookLog::class);
     }
 }

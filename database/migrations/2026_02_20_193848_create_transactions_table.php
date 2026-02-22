@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('payment_requests', function (Blueprint $table) {
+        Schema::create('transactions', function (Blueprint $table) {
             $table->id();
             $table->decimal('amount', 10, 2);
             $table->string('currency', 3);
             $table->string('status');
             $table->string('payment_gateway');
-            $table->string('gateway_transaction_id');
+            $table->string('gateway_transaction_id')->nullable();
             $table->timestamps();
         });
     }

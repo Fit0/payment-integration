@@ -13,10 +13,11 @@ return new class extends Migration
     {
         Schema::create('webhook_logs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('transaction_id')->constrained()->onDelete('cascade');
             $table->string('payment_gateway');
             $table->json('webhook_data');
-            $table->timestamp('processed_at')->nullable();
+            $table->integer('status_code')->nullable();
+            $table->text('response_message')->nullable();
+            $table->boolean('success')->default(false);
             $table->timestamps();
         });
     }
