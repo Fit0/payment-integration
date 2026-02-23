@@ -166,13 +166,13 @@ class SuperWalletzGateway implements PaymentGatewayInterface
                     'error_type' => 'invalid_webhook_id',
                 ];
             }
-            
+
             if ($webhookId) {
                 Cache::forget("webhook_{$webhookId}");
             }
 
             $validationError = $this->validateWebhookData($webhookData);
-            
+
             if ($validationError) {
                 $this->logWebhook($webhookData, $validationError, false);
                 return $validationError;
@@ -195,7 +195,7 @@ class SuperWalletzGateway implements PaymentGatewayInterface
                 'error' => $e->getMessage(),
                 'webhook_data' => $webhookData,
             ]);
-            
+
             $this->logWebhook($webhookData, $e->getMessage(), false);
 
             return [
@@ -228,10 +228,9 @@ class SuperWalletzGateway implements PaymentGatewayInterface
         ]);
         
         while ((time() - $startTime) < $timeout) {
-            // Buscar webhooks recientes exitosos para este gateway
             $recentWebhook = WebhookLog::where('payment_gateway', self::GATEWAY_NAME)
                 ->where('success', true)
-                ->where('created_at', '>=', now()->subMinutes(2)) // Últimos 2 minutos
+                ->where('created_at', '>=', now()->subMinutes(2))
                 ->orderBy('created_at', 'desc')
                 ->first();
             
@@ -413,5 +412,29 @@ class SuperWalletzGateway implements PaymentGatewayInterface
         }
 
         return null;
+    }
+
+    private function createErrorResponse(string $errorType, ?int $statusCode = null, ?string $responseBody = null): array
+    {
+        $statusCode = $statusCode ?? match ($errorType) {
+            'invalid_currency' => 400,
+            'invalid_amount' => 400,
+            'connection_error' => 500,
+            default => 500,
+        };
+
+        $responseBody = $responseBody ?? match ($errorType) {
+            'invalid_currency' => 'error',
+            'invalid_amount' => 'error',
+            'connection_error' => 'Internal server error',
+            default => 'error',
+        };
+
+        return PaymentErrorService::createErrorResponse(
+            $statusCode,
+            $responseBody,
+            $errorType,
+            self::ERROR_MESSAGES[$errorType] ?? 'Unknown error occurred with EasyMoney.'
+        );
     }
 }

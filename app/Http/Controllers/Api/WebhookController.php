@@ -49,7 +49,7 @@ class WebhookController extends Controller
             'message' => $result['message'],
             'data' => [
                 'transaction_id' => $result['transaction_id'] ?? null,
-                'status' => $result['status'] ?? null,
+                'status' => $result['status'] ?? null
             ],
         ], $result['success'] ? 200 : 400);
     }
